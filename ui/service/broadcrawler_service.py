@@ -88,12 +88,11 @@ def register_broadcrawler_subscriber():
 
 def get_existing_categories_service(workspace_id):
 
-    collection = Singleton.getInstance().mongo_instance.get_broad_crawler_collection()
-    search_object = {}
-    search_object["workspaceId"] = workspace_id
-    categories = list(collection.find(search_object).distinct("categories"))
-    languages = list(collection.find(search_object).distinct("language"))
-    return categories, languages
+        collection = Singleton.getInstance().mongo_instance.get_broad_crawler_collection()
+        search_object = {"workspaceId": workspace_id}
+        categories = list(collection.find(search_object).distinct("categories"))
+        languages = list(collection.find(search_object).distinct("language"))
+        return categories, languages
 
 
 def get_max_id(workspace_id, job_id):
@@ -124,13 +123,12 @@ def get_max_id(workspace_id, job_id):
 
 
 def get_search_results(workspace_id, input_search_query):
-    mongo_result = get_search_results_mongo_dao(workspace_id, input_search_query)
-    return mongo_result
+        return get_search_results_mongo_dao(workspace_id, input_search_query)
 
 
 def get_broadcrawl_results_summary(workspace_id, input_search_query):
-    mongo_result = get_broadcrawl_results_summary_mongo_dao(workspace_id, input_search_query)
-    return mongo_result
+        return get_broadcrawl_results_summary_mongo_dao(workspace_id,
+                                                        input_search_query)
 
 
 def get_search_results_mongo_dao(workspace_id, input_search_query):
@@ -316,58 +314,57 @@ def get_broadcrawl_results_summary_mongo_dao(workspace_id, input_search_query):
 
 def get_broadcrawl_results_summary_count_mongo_dao(workspace_id, input_search_query):
 
-    # ws_object = {}
-    # ws_object["workspaceId"] = workspace_id
-    #
-    search_text = input_search_query['search_text']
+        # ws_object = {}
+        # ws_object["workspaceId"] = workspace_id
+        #
+        search_text = input_search_query['search_text']
 
-    text_search_object = {}
+        text_search_object = {}
 
-    if search_text is not None:
-        text_search_conditions = [{'url': {'$regex': search_text}}, {'host': {'$regex': search_text}}]
-        text_search_object = {'$or': text_search_conditions}
+        if search_text is not None:
+            text_search_conditions = [{'url': {'$regex': search_text}}, {'host': {'$regex': search_text}}]
+            text_search_object = {'$or': text_search_conditions}
 
-    search_object = {'$and': [
-                            {'workspaceId': workspace_id},
-                            text_search_object,
-                            {'deleted': None},
-    ]}
+        search_object = {'$and': [
+                                {'workspaceId': workspace_id},
+                                text_search_object,
+                                {'deleted': None},
+        ]}
 
-    collection = Singleton.getInstance().mongo_instance.get_broad_crawler_collection()
-    res_hosts = collection.aggregate([
-            # {'$match': {"deleted": None}},
-            # {'$match': language_search_object},
-            {'$match': search_object},
-            {'$match': {"score": {'$lt': 100}}},
-            # {'$project': {"host": 1, "score": 1, "url": 1, "urlDesc": 1, "language": 1, "categories": 1,
-            {'$project': {"host": 1, "score": 1, "url": 1, "title": 1, "language": 1, "categories": 1,
-                "pinned": {"$cond": ["$pinned", 1, 0]},
-                "deleted": {"$cond": ["$deleted", 1, 0]}
-             }},
-            {'$sort': {"host": 1, "score": -1, "_id": 1}},
-            {'$group': {
-                        '_id': "$host",
-                        "host": {'$first': "$host"},
-                        "score": {'$max': "$score"},
-                        "count": {'$sum': 1},
-                        "url": {'$first': "$url"},
-                        "id": {'$first': "$_id"},
-                        # "urlDesc": {'$first': "$urlDesc"},
-                        "title": {'$first': "$title"},
-                        "language": {'$first': "$language"},
-                        "categories": {'$first': "$categories"},
-                        "pinned": {'$max': "$pinned"},
-                        "deleted": {'$max': "$deleted"},
-             }},
-            {'$match': {"deleted": 0}},
-            # {'$sort': {"score": -1, "_id": 1}},
-            # {'$sort': {orderBy: orderDirection, "_id": 1}},
-            # {'$skip': docs_to_skip},
-            # {'$limit': page_size}
-            ])
+        collection = Singleton.getInstance().mongo_instance.get_broad_crawler_collection()
+        res_hosts = collection.aggregate([
+                # {'$match': {"deleted": None}},
+                # {'$match': language_search_object},
+                {'$match': search_object},
+                {'$match': {"score": {'$lt': 100}}},
+                # {'$project': {"host": 1, "score": 1, "url": 1, "urlDesc": 1, "language": 1, "categories": 1,
+                {'$project': {"host": 1, "score": 1, "url": 1, "title": 1, "language": 1, "categories": 1,
+                    "pinned": {"$cond": ["$pinned", 1, 0]},
+                    "deleted": {"$cond": ["$deleted", 1, 0]}
+                 }},
+                {'$sort': {"host": 1, "score": -1, "_id": 1}},
+                {'$group': {
+                            '_id': "$host",
+                            "host": {'$first': "$host"},
+                            "score": {'$max': "$score"},
+                            "count": {'$sum': 1},
+                            "url": {'$first': "$url"},
+                            "id": {'$first': "$_id"},
+                            # "urlDesc": {'$first': "$urlDesc"},
+                            "title": {'$first': "$title"},
+                            "language": {'$first': "$language"},
+                            "categories": {'$first': "$categories"},
+                            "pinned": {'$max': "$pinned"},
+                            "deleted": {'$max': "$deleted"},
+                 }},
+                {'$match': {"deleted": 0}},
+                # {'$sort': {"score": -1, "_id": 1}},
+                # {'$sort': {orderBy: orderDirection, "_id": 1}},
+                # {'$skip': docs_to_skip},
+                # {'$limit': page_size}
+                ])
 
-    output = len(res_hosts["result"])
-    return output
+        return len(res_hosts["result"])
 
 
 
@@ -388,10 +385,9 @@ def get_relevant_or_neutral_seeds_urls_url(workspace_id):
 
 
 def delete_broadcrawler_result(workspace_id, id):
-    collection = Singleton.getInstance().mongo_instance.get_broad_crawler_collection()
-    update_object= {}
-    update_object['deleted'] = True
-    collection.update({"_id": ObjectId(id)}, {'$set': update_object}, True)
+        collection = Singleton.getInstance().mongo_instance.get_broad_crawler_collection()
+        update_object = {'deleted': True}
+        collection.update({"_id": ObjectId(id)}, {'$set': update_object}, True)
 
 
 ''' Pin Service '''

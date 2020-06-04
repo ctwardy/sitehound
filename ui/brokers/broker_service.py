@@ -175,10 +175,12 @@ class BrokerService(object):
         self.post_to_queue_no_extra_headers(message, self.events_topic_input)
 
     def get_metadata(self, workspace_id):
-        metadata = {}
-        metadata['workspace'] = workspace_id
-        metadata['source'] = Singleton.getInstance().app_instance
-        metadata['callbackQueue'] = "callback_queue_not_used"
+        metadata = {
+            'workspace': workspace_id,
+            'source': Singleton.getInstance().app_instance,
+            'callbackQueue': "callback_queue_not_used",
+        }
+
         metadata['timestamp'] = time.time()
         metadata['strTimestamp'] = strftime("%Y-%m-%d %H:%M:%S", gmtime())
         return metadata

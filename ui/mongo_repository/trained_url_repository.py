@@ -7,17 +7,17 @@ from ui.singleton import Singleton
 def get_seeds_urls_by_source_dao(workspace_id, source, relevance, last_id):
 
     source_search_conditions = []
-    if source == "searchengine":
-        source_search_conditions.append({'crawlEntityType': "BING"})
-        source_search_conditions.append({'crawlEntityType': "GOOGLE"})
-    elif source == "twitter":
-        source_search_conditions.append({'crawlEntityType': "TWITTER"})
-    elif source == "tor":
-        source_search_conditions.append({'crawlEntityType': "TOR"})
+    if source == "deepdeep":
+        source_search_conditions.append({'crawlEntityType': "DD"})
     elif source == "imported":
         source_search_conditions.append({'crawlEntityType': "MANUAL"})
-    elif source == "deepdeep":
-        source_search_conditions.append({'crawlEntityType': "DD"})
+    elif source == "searchengine":
+        source_search_conditions.append({'crawlEntityType': "BING"})
+        source_search_conditions.append({'crawlEntityType': "GOOGLE"})
+    elif source == "tor":
+        source_search_conditions.append({'crawlEntityType': "TOR"})
+    elif source == "twitter":
+        source_search_conditions.append({'crawlEntityType': "TWITTER"})
     else:
         print("no valid source was provided:" + source)
     source_search_object = {'$or': source_search_conditions}
@@ -50,8 +50,7 @@ def get_seeds_urls_by_source_dao(workspace_id, source, relevance, last_id):
         .sort('_id', pymongo.ASCENDING)\
         .limit(3)
 
-    docs = list(res)
-    return docs
+    return list(res)
 
 
 def get_seeds_urls_by_workspace_dao(workspace_id):
@@ -65,8 +64,7 @@ def get_seeds_urls_by_workspace_dao(workspace_id):
 def get_seeds_urls_url(workspace_id):
     collection = Singleton.getInstance().mongo_instance.get_seed_urls_collection()
     res = collection.find({'workspaceId': workspace_id}, {'_id': 0, 'url': 1})
-    docs = list(res)
-    return docs
+    return list(res)
 
 
 def get_seeds_urls_categorized(workspace_id):
@@ -111,15 +109,13 @@ def dao_update_relevance(url, obj):
 
 def dao_update_relevanceByid(workspace_id, id, relevance):
     collection = Singleton.getInstance().mongo_instance.get_seed_urls_collection()
-    update_object= {}
-    update_object['relevant'] = relevance
+    update_object = {'relevant': relevance}
     collection.update({"_id": ObjectId(id)}, {'$set': update_object}, True)
 
 
 def dao_delete_seed_url(workspace_id, id):
     collection = Singleton.getInstance().mongo_instance.get_seed_urls_collection()
-    update_object= {}
-    update_object['deleted'] = True
+    update_object = {'deleted': True}
     collection.update({"_id": ObjectId(id)}, {'$set': update_object}, True)
 
 

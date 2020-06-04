@@ -22,8 +22,7 @@ def get_jobs_by_workspace(workspace_id):
 
 
 def get_job(jobId):
-    result = {}
-    result['job'] = get_job_dao(jobId);
+    result = {'job': get_job_dao(jobId)}
     result['tasks'] = get_tasks_by_job(jobId);
     return result
 
@@ -31,12 +30,14 @@ def get_job(jobId):
 # def save_job(num_to_fetch, broad_crawler_provider, broad_crawler_sources, crawl_type, job_id, workspace_name, workspace_id):
 def save_job(workspace_id, num_to_fetch, broad_crawler_provider, broad_crawler_sources, crawl_type):
 
-    job = {}
-    job["crawlType"] = crawl_type
-    job["nResultsRequested"] = num_to_fetch
-    job["provider"] = broad_crawler_provider
-    job["sources"] = broad_crawler_sources
-    job['timestamp'] = time.time()
+    job = {
+        "crawlType": crawl_type,
+        "nResultsRequested": num_to_fetch,
+        "provider": broad_crawler_provider,
+        "sources": broad_crawler_sources,
+        'timestamp': time.time(),
+    }
+
     job['strTimestamp'] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
     job["workspaceId"] = workspace_id
     job["status"] = "QUEUED"
