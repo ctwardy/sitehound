@@ -54,7 +54,7 @@ def dao_get_keywords_by_relevance(workspace_id):
             else:
                 related.append(value['word'])
 
-    if len(included) == 0:
+    if not included:
         raise NameError('No keywords where defined.')
 
     keywords['included'] = included
@@ -71,7 +71,7 @@ def dao_update_keywords(workspace_id, word, score):
 
     # ws = Singleton.getInstance().mongo_instance.get_current_workspace()
     ws = Singleton.getInstance().mongo_instance.get_workspace_by_id(workspace_id)
-    if ws == None:
+    if ws is None:
         Singleton.getInstance().mongo_instance.workspace_collection.upsert({"_id": "_default"}, operation)
     else:
         Singleton.getInstance().mongo_instance.workspace_collection.update({"_id": ObjectId(ws["_id"])}, operation)
@@ -83,7 +83,7 @@ def dao_delete_keywords(workspace_id, hash):
     operation = {'$unset': {"words." + hash: ""}}
     # ws = Singleton.getInstance().mongo_instance.get_current_workspace()
     ws = Singleton.getInstance().mongo_instance.get_workspace_by_id(workspace_id)
-    if ws == None:
+    if ws is None:
         Singleton.getInstance().mongo_instance.workspace_collection.update({"_id": "_default"}, operation)
     else:
         Singleton.getInstance().mongo_instance.workspace_collection.update({"_id": ObjectId(ws["_id"])}, operation)

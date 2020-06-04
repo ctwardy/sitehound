@@ -14,6 +14,5 @@ def get_screenshot(crawl_type, id):
 
     res = collection.find({"_id": ObjectId(id)})
     url = res[0]["url"]
-    base64 = Singleton.getInstance().es_client.get_screenshoot(url)
-    return base64
+    return Singleton.getInstance().es_client.get_screenshoot(url)
 

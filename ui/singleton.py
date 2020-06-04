@@ -59,6 +59,6 @@ class Singleton(object):
 # that a single instance of TestSingleton already exists.
 
 if __name__ == "__main__":
-    for i in range( 10 ):
+    for _ in range( 10 ):
         Singleton.getInstance()
 
